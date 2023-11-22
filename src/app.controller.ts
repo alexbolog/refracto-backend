@@ -46,11 +46,11 @@ export class AppController {
     for (const project of projectDetails) {
       const holdersCount = await this.apiService.queryTokenHolders(
         REFRACTO_LOAN_SHARE_TOKEN_ID,
-        project.share_token_nonce.toNumber(),
+        project.share_token_nonce,
       );
       await this.supabaseService.updateProjectScProgress(
-        project.project_id.toNumber(),
-        project.cf_progress.shiftedBy(-6).toNumber(),
+        project.project_id,
+        project.cf_progress,
         holdersCount - 1,
       );
     }

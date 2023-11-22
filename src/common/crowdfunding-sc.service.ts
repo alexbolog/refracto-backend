@@ -9,6 +9,7 @@ import { LOAN_CF_SC_ADDRESS } from 'src/config';
 import { ElrondProviderService } from './elrond-provider.service';
 
 import LOAN_CF_SC_ABI from 'src/abi/loan-crowdfund-sc.abi.json';
+import { SCProjectDetails } from 'src/models';
 
 const loanCrowdfundAbiRegistry = AbiRegistry.create(LOAN_CF_SC_ABI);
 const loanCrowdfundSmartContract = new SmartContract({
@@ -20,7 +21,7 @@ const loanCrowdfundSmartContract = new SmartContract({
 export class CrowdfundingScService {
   constructor(private readonly elrondProviderService: ElrondProviderService) {}
 
-  async getProjectDetails(projectIds: number[]): Promise<any[]> {
+  async getProjectDetails(projectIds: number[]): Promise<SCProjectDetails[]> {
     const interaction =
       loanCrowdfundSmartContract.methods.getProjectDetails(projectIds);
     const query = interaction.check().buildQuery();
@@ -39,7 +40,30 @@ export class CrowdfundingScService {
       return [];
     }
 
-    return firstValue.valueOf();
+    const valueArr = firstValue.valueOf();
+    const decoded: SCProjectDetails[] = valueArr.map((value: any) => ({
+      project_id: value.project_id.toNumber(),
+      project_name: value.project_name.toString(),
+      project_payment_token: value.project_payment_token.toString(),
+      daily_interest_rate: value.daily_interest_rate.toNumber(),
+      daily_penalty_fee_rate: value.daily_penalty_fee_rate.toNumber(),
+      developer_wallet_address: value.developer_wallet.bech32(),
+      share_token_nonce: value.share_token_nonce.toNumber(),
+      share_price_per_unit: value.share_price_per_unit.toNumber(),
+      cf_start_timestamp: value.cf_start_timestamp.toNumber(),
+      cf_end_timestamp: value.cf_end_timestamp.toNumber(),
+      cf_target_min: value.cf_target_min.shiftedBy(-6).toNumber(),
+      cf_target_max: value.cf_target_max.shiftedBy(-6).toNumber(),
+      cf_progress: value.cf_progress.shiftedBy(-6).toNumber(),
+      loan_duration: value.loan_duration.toNumber(),
+      loan_start_timestamp: value.loan_start_timestamp.toNumber(),
+      repayment_contract_address: value.repayment_contract_address.bech32(),
+      is_cancelled: value.is_cancelled,
+      is_loan_active: value.is_loan_active,
+      is_repaid: value.is_repayed,
+    }));
+
+    return decoded;
   }
 
   // async viewCommonContext(
