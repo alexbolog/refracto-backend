@@ -37,6 +37,7 @@ export class CrowdfundingCronService {
         project.project_id,
         project.cf_progress,
         holdersCount - 1,
+        project.share_token_nonce,
       );
     }
 

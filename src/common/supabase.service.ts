@@ -23,7 +23,7 @@ export class SupabaseService {
   }
 
   async getProjectIds(): Promise<number[]> {
-    const { data, error } = await this.supabase.rpc('read_project_data');
+    const { data, error } = await this.supabase.rpc('read_update_project_data');
     if (error) {
       console.log('Error getting project ids', error);
       return [];
@@ -36,15 +36,14 @@ export class SupabaseService {
     projectId: number,
     crowdfundedAmount: number,
     holdersCount: number,
+    shareTokenNonce: number,
   ): Promise<void> {
-    const { error } = await this.supabase.rpc(
-      'update_project_amount_and_holders',
-      {
-        _projectid: projectId,
-        _amount: crowdfundedAmount,
-        _holderscount: holdersCount,
-      },
-    );
+    const { error } = await this.supabase.rpc('update_project_sc_data', {
+      _projectid: projectId,
+      _amount: crowdfundedAmount,
+      _holderscount: holdersCount,
+      _sharetokennonce: shareTokenNonce,
+    });
     if (error) {
       console.log(
         `Error setting crowdfunded amount for projectId = ${projectId}`,
@@ -52,36 +51,4 @@ export class SupabaseService {
       );
     }
   }
-
-  // async setCrowdfundedAmount(
-  //   projectId: number,
-  //   crowdfundedAmount: number,
-  // ): Promise<void> {
-  //   const { error } = await this.supabase
-  //     .from('projects')
-  //     .update({ crowdfundedAmount })
-  //     .match({ id: projectId });
-  //   if (error) {
-  //     console.log(
-  //       `Error setting crowdfunded amount for projectId = ${projectId}`,
-  //       error,
-  //     );
-  //   }
-  // }
-
-  // async setHoldersCount(
-  //   projectId: number,
-  //   holdersCount: number,
-  // ): Promise<void> {
-  //   const { error } = await this.supabase
-  //     .from('projects')
-  //     .update({ holders: holdersCount })
-  //     .match({ id: projectId });
-  //   if (error) {
-  //     console.log(
-  //       `Error setting holders count for projectId = ${projectId}`,
-  //       error,
-  //     );
-  //   }
-  // }
 }
