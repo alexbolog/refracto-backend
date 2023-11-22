@@ -1,0 +1,588 @@
+{
+    "buildInfo": {
+        "rustc": {
+            "version": "1.71.0-nightly",
+            "commitHash": "5cdb7886a5ece816864fab177f0c266ad4dd5358",
+            "commitDate": "2023-04-15",
+            "channel": "Nightly",
+            "short": "rustc 1.71.0-nightly (5cdb7886a 2023-04-15)"
+        },
+        "contractCrate": {
+            "name": "loan-crowdfund-sc",
+            "version": "0.0.0"
+        },
+        "framework": {
+            "name": "multiversx-sc",
+            "version": "0.43.4"
+        }
+    },
+    "name": "LoanCrowdfundScContract",
+    "constructor": {
+        "inputs": [
+            {
+                "name": "source_loan_repayment_sc_address",
+                "type": "Address"
+            }
+        ],
+        "outputs": []
+    },
+    "endpoints": [
+        {
+            "name": "invest",
+            "mutability": "mutable",
+            "payableInTokens": [
+                "*"
+            ],
+            "inputs": [
+                {
+                    "name": "project_id",
+                    "type": "u64"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "getDebugSourceRepaymentSc",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "Address"
+                }
+            ]
+        },
+        {
+            "name": "withdraw",
+            "mutability": "mutable",
+            "payableInTokens": [
+                "*"
+            ],
+            "inputs": [],
+            "outputs": []
+        },
+        {
+            "name": "claim",
+            "mutability": "mutable",
+            "payableInTokens": [
+                "*"
+            ],
+            "inputs": [],
+            "outputs": []
+        },
+        {
+            "name": "distributeRepayment",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "project_id",
+                    "type": "u64"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "getProjectDetails",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "project_ids",
+                    "type": "variadic<u64>",
+                    "multi_arg": true
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "List<CrowdfundingStateContext>"
+                }
+            ]
+        },
+        {
+            "name": "addAdmins",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "addresses",
+                    "type": "variadic<Address>",
+                    "multi_arg": true
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "removeAdmins",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "addresses",
+                    "type": "variadic<Address>",
+                    "multi_arg": true
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "getIsAddressAdmin",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "address",
+                    "type": "Address"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "bool"
+                }
+            ]
+        },
+        {
+            "name": "getAdminList",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "variadic<Address>",
+                    "multi_result": true
+                }
+            ]
+        },
+        {
+            "name": "getLoanShareTokenIdentifier",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "TokenIdentifier"
+                }
+            ]
+        },
+        {
+            "name": "getCrowdfundingState",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "project_id",
+                    "type": "u64"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "CrowdfundingStateContext"
+                }
+            ]
+        },
+        {
+            "name": "getProjectIdByLoanShareNonce",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "nonce",
+                    "type": "u64"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "u64"
+                }
+            ]
+        },
+        {
+            "name": "getSourceLoanRepaymentScAddress",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "Address"
+                }
+            ]
+        },
+        {
+            "name": "getRecordedPayments",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "project_id",
+                    "type": "u64"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "variadic<tuple<Address,u64,BigUint>>",
+                    "multi_result": true
+                }
+            ]
+        },
+        {
+            "name": "getRepaymentRate",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "project_id",
+                    "type": "u64"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "name": "getIsKycCompliant",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "address",
+                    "type": "Address"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "bool"
+                }
+            ]
+        },
+        {
+            "name": "registerSuccessfulKyc",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "address",
+                    "type": "Address"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "getWhitelistedUsers",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "variadic<Address>",
+                    "multi_result": true
+                }
+            ]
+        },
+        {
+            "name": "create",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "project_id",
+                    "type": "u64"
+                },
+                {
+                    "name": "project_name",
+                    "type": "bytes"
+                },
+                {
+                    "name": "project_payment_token",
+                    "type": "TokenIdentifier"
+                },
+                {
+                    "name": "daily_interest_rate",
+                    "type": "u64"
+                },
+                {
+                    "name": "daily_penalty_fee_rate",
+                    "type": "u64"
+                },
+                {
+                    "name": "developer_wallet",
+                    "type": "Address"
+                },
+                {
+                    "name": "share_price_per_unit",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "cf_start_timestamp",
+                    "type": "u64"
+                },
+                {
+                    "name": "cf_end_timestamp",
+                    "type": "u64"
+                },
+                {
+                    "name": "cf_target_min",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "cf_target_max",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "loan_duration",
+                    "type": "u64"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "cancel",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "project_id",
+                    "type": "u64"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "adminDistributeRepayment",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "project_id",
+                    "type": "u64"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "issueAndSetRoles",
+            "onlyOwner": true,
+            "mutability": "mutable",
+            "payableInTokens": [
+                "*"
+            ],
+            "inputs": [
+                {
+                    "name": "token_name",
+                    "type": "bytes"
+                },
+                {
+                    "name": "token_ticker",
+                    "type": "bytes"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "setTransferRole",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "address",
+                    "type": "optional<Address>",
+                    "multi_arg": true
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "claimLoanFunds",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "project_id",
+                    "type": "u64"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "getExpectedInterest",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "project_id",
+                    "type": "u64"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "name": "getExpectedLateFees",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "project_id",
+                    "type": "u64"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "name": "getTotalAmount",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "project_id",
+                    "type": "u64"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "name": "getFundingState",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "project_id",
+                    "type": "u64"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "ProjectFundingState"
+                }
+            ]
+        },
+        {
+            "name": "getAggregatedCoolOffAmount",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "project_id",
+                    "type": "u64"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        }
+    ],
+    "events": [],
+    "hasCallback": true,
+    "types": {
+        "CrowdfundingStateContext": {
+            "type": "struct",
+            "fields": [
+                {
+                    "name": "project_id",
+                    "type": "u64"
+                },
+                {
+                    "name": "project_name",
+                    "type": "bytes"
+                },
+                {
+                    "name": "project_payment_token",
+                    "type": "TokenIdentifier"
+                },
+                {
+                    "name": "daily_interest_rate",
+                    "type": "u64"
+                },
+                {
+                    "name": "daily_penalty_fee_rate",
+                    "type": "u64"
+                },
+                {
+                    "name": "developer_wallet",
+                    "type": "Address"
+                },
+                {
+                    "name": "share_token_nonce",
+                    "type": "u64"
+                },
+                {
+                    "name": "share_price_per_unit",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "cf_start_timestamp",
+                    "type": "u64"
+                },
+                {
+                    "name": "cf_end_timestamp",
+                    "type": "u64"
+                },
+                {
+                    "name": "cf_target_min",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "cf_target_max",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "cf_progress",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "loan_duration",
+                    "type": "u64"
+                },
+                {
+                    "name": "loan_start_timestamp",
+                    "type": "u64"
+                },
+                {
+                    "name": "repayment_contract_address",
+                    "type": "Address"
+                },
+                {
+                    "name": "is_cancelled",
+                    "type": "bool"
+                },
+                {
+                    "name": "is_loan_active",
+                    "type": "bool"
+                },
+                {
+                    "name": "is_repayed",
+                    "type": "bool"
+                }
+            ]
+        },
+        "ProjectFundingState": {
+            "type": "enum",
+            "variants": [
+                {
+                    "name": "Invalid",
+                    "discriminant": 0
+                },
+                {
+                    "name": "Pending",
+                    "discriminant": 1
+                },
+                {
+                    "name": "CFActive",
+                    "discriminant": 2
+                },
+                {
+                    "name": "CFWaitingCooloff",
+                    "discriminant": 3
+                },
+                {
+                    "name": "CFSuccessful",
+                    "discriminant": 4
+                },
+                {
+                    "name": "CFFailed",
+                    "discriminant": 5
+                },
+                {
+                    "name": "CFCancelled",
+                    "discriminant": 6
+                },
+                {
+                    "name": "LoanActive",
+                    "discriminant": 7
+                },
+                {
+                    "name": "Completed",
+                    "discriminant": 8
+                }
+            ]
+        }
+    }
+}
