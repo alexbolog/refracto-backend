@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 import BigNumber from 'bignumber.js';
 
 import dotenv = require('dotenv');
+import { ProcessedTransaction } from 'src/models';
 dotenv.config();
 
 @Injectable()
@@ -62,6 +63,18 @@ export class SupabaseService {
       return 0;
     }
 
-    return data[0];
+    return data === null || data[0].length === 0 ? 0 : data[0];
+  }
+
+  async addProcessedTransactions(
+    transactions: ProcessedTransaction[],
+  ): Promise<void> {
+    const { error } = await this.supabase.rpc('add_processed_transactions', {
+      transactions: transactions,
+    });
+
+    if (error) {
+      console.log('Error adding processed transactions', error);
+    }
   }
 }
