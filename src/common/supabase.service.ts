@@ -51,4 +51,17 @@ export class SupabaseService {
       );
     }
   }
+
+  async getLastProcessedTransactionTimestamp(): Promise<number> {
+    const { data, error } = await this.supabase.rpc(
+      'get_last_processed_tx_timestamp',
+    );
+
+    if (error) {
+      console.log('Error getting last processed transaction timestamp', error);
+      return 0;
+    }
+
+    return data[0];
+  }
 }
