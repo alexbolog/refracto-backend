@@ -65,6 +65,7 @@ export class CrowdfundingCronService {
       await this.supabaseService.getUnprocessedTransactionHashes(
         newApiTransactions.map((transaction) => transaction.txHash),
       );
+
     const newTransactions = newApiTransactions.filter((transaction) =>
       unprocessedTransactionHashes.includes(transaction.txHash),
     );

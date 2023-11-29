@@ -97,6 +97,6 @@ export class SupabaseService {
       return [];
     }
 
-    return data;
+    return data.map((d: { tx_hash: string }) => d.tx_hash);
   }
 }
