@@ -4,6 +4,7 @@ import { ElrondProviderService } from './elrond-provider.service';
 import { ElrondApiService } from './elrond-api.service';
 import { SupabaseService } from './supabase.service';
 import { CrowdfundingScService } from './crowdfunding-sc.service';
+import { TransactionProcessorService } from './transaction-processor.service';
 
 @Global()
 @Module({
@@ -14,6 +15,7 @@ import { CrowdfundingScService } from './crowdfunding-sc.service';
     ElrondApiService,
     SupabaseService,
     CrowdfundingScService,
+    TransactionProcessorService,
   ],
   exports: [
     HttpModule,
@@ -22,6 +24,7 @@ import { CrowdfundingScService } from './crowdfunding-sc.service';
     ElrondApiService,
     SupabaseService,
     CrowdfundingScService,
+    TransactionProcessorService,
   ],
 })
 export class CommonModule {}

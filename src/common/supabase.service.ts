@@ -63,12 +63,15 @@ export class SupabaseService {
       return 0;
     }
 
-    return data === null || data[0].length === 0 ? 0 : data[0];
+    return data === null ? 0 : Math.floor(new Date(data).getTime() / 1000);
   }
 
   async addProcessedTransactions(
     transactions: ProcessedTransaction[],
   ): Promise<void> {
+    if (transactions.length === 0) {
+      return;
+    }
     const { error } = await this.supabase.rpc('add_processed_transactions', {
       transactions: transactions,
     });
@@ -76,5 +79,24 @@ export class SupabaseService {
     if (error) {
       console.log('Error adding processed transactions', error);
     }
+  }
+
+  async getUnprocessedTransactionHashes(hashes: string[]): Promise<string[]> {
+    if (hashes.length === 0) {
+      return [];
+    }
+    const { data, error } = await this.supabase.rpc(
+      'get_unprocessed_transaction_hashes',
+      {
+        tx_hashes: hashes,
+      },
+    );
+
+    if (error) {
+      console.log('Error getting unprocessed transaction hashes', error);
+      return [];
+    }
+
+    return data;
   }
 }
