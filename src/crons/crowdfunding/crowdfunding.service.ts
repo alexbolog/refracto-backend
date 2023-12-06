@@ -19,13 +19,15 @@ export class CrowdfundingCronService {
 
   private LOG_PREFIX: string = 'CrowdfundingCronService';
 
-  // @Cron('*/3 * * * * *')
+  @Cron('*/3 * * * * *')
   async updateProjects(): Promise<any> {
     this.logger.log(`${this.LOG_PREFIX}/updateCrowdfundingProjects: Start`);
     const projectIds = await this.supabaseService.getProjectIds();
     const projectDetails = await this.crowdfundingScService.getProjectDetails(
       projectIds,
     );
+
+    const existingUiProjects = await this.supabaseService.getUiProjects();
 
     this.logger.log(
       `${this.LOG_PREFIX}/updateCrowdfundingProjects: updating ${projectDetails.length} projects`,
@@ -35,12 +37,27 @@ export class CrowdfundingCronService {
         REFRACTO_LOAN_SHARE_TOKEN_ID,
         project.share_token_nonce,
       );
-      await this.supabaseService.updateProjectScProgress(
-        project.project_id,
-        project.cf_progress,
-        holdersCount - 1,
-        project.share_token_nonce,
+
+      const existingUiProject = existingUiProjects.find(
+        (p) => p.projectId === project.project_id,
       );
+
+      if (
+        !existingUiProject ||
+        existingUiProject.tokenNonce !== project.share_token_nonce ||
+        existingUiProject.crowdfundedAmount !== project.cf_progress ||
+        existingUiProject.holdersCount !== holdersCount - 1
+      ) {
+        this.logger.log(
+          `${this.LOG_PREFIX}/updateCrowdfundingProjects: updating project ${project.project_id}`,
+        );
+        await this.supabaseService.updateProjectScProgress(
+          project.project_id,
+          project.cf_progress,
+          holdersCount - 1,
+          project.share_token_nonce,
+        );
+      }
     }
 
     this.logger.log(`${this.LOG_PREFIX}/updateCrowdfundingProjects: End`);
