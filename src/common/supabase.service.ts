@@ -33,6 +33,27 @@ export class SupabaseService {
     return data.map((project: any) => project.id);
   }
 
+  async getUiProjects(): Promise<any[]> {
+    const { data, error } = await this.supabase.rpc('read_project_data');
+    if (error) {
+      console.log('Error: ', error);
+      return []; // return an empty array in case of an error
+    }
+    return data.map((r: any) => ({
+      projectId: r.id,
+      projectTitle: r.title,
+      returnPercentage: r.returnpercentage,
+      riskRatingLevel: r.riskratinglevel,
+      crowdfundingDeadline: r.crowdfundingdeadline,
+      crowdfundingTarget: r.crowdfundingtarget,
+      crowdfundedAmount: r.crowdfundedamount,
+      colorCodeHex: r.colorcodehex,
+      thumbnailSrc: r.thumbnailsrc,
+      tokenNonce: r.sharetokennonce,
+      holdersCount: r.holders,
+    }));
+  }
+
   async updateProjectScProgress(
     projectId: number,
     crowdfundedAmount: number,
