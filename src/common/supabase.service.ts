@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 import BigNumber from 'bignumber.js';
 
 import dotenv = require('dotenv');
+import { ProcessedTransaction } from 'src/models';
 dotenv.config();
 
 @Injectable()
@@ -50,5 +51,52 @@ export class SupabaseService {
         error,
       );
     }
+  }
+
+  async getLastProcessedTransactionTimestamp(): Promise<number> {
+    const { data, error } = await this.supabase.rpc(
+      'get_last_processed_tx_timestamp',
+    );
+
+    if (error) {
+      console.log('Error getting last processed transaction timestamp', error);
+      return 0;
+    }
+
+    return data === null ? 0 : Math.floor(new Date(data).getTime() / 1000);
+  }
+
+  async addProcessedTransactions(
+    transactions: ProcessedTransaction[],
+  ): Promise<void> {
+    if (transactions.length === 0) {
+      return;
+    }
+    const { error } = await this.supabase.rpc('add_processed_transactions', {
+      transactions: transactions,
+    });
+
+    if (error) {
+      console.log('Error adding processed transactions', error);
+    }
+  }
+
+  async getUnprocessedTransactionHashes(hashes: string[]): Promise<string[]> {
+    if (hashes.length === 0) {
+      return [];
+    }
+    const { data, error } = await this.supabase.rpc(
+      'get_unprocessed_transaction_hashes',
+      {
+        tx_hashes: hashes,
+      },
+    );
+
+    if (error) {
+      console.log('Error getting unprocessed transaction hashes', error);
+      return [];
+    }
+
+    return data.map((d: { tx_hash: string }) => d.tx_hash);
   }
 }

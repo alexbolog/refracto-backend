@@ -5,6 +5,7 @@ import { REFRACTO_LOAN_SHARE_TOKEN_ID, networkConfig } from 'src/config';
 import { CrowdfundingScService } from 'src/common/crowdfunding-sc.service';
 import { ElrondApiService } from 'src/common/elrond-api.service';
 import { SupabaseService } from 'src/common/supabase.service';
+import { TransactionProcessorService } from 'src/common/transaction-processor.service';
 
 @Injectable()
 export class CrowdfundingCronService {
@@ -13,11 +14,12 @@ export class CrowdfundingCronService {
     private readonly supabaseService: SupabaseService,
     private readonly crowdfundingScService: CrowdfundingScService,
     private readonly apiService: ElrondApiService,
+    private readonly transactionProcessor: TransactionProcessorService,
   ) {}
 
   private LOG_PREFIX: string = 'CrowdfundingCronService';
 
-  @Cron('*/3 * * * * *')
+  // @Cron('*/3 * * * * *')
   async updateProjects(): Promise<any> {
     this.logger.log(`${this.LOG_PREFIX}/updateCrowdfundingProjects: Start`);
     const projectIds = await this.supabaseService.getProjectIds();
@@ -42,5 +44,41 @@ export class CrowdfundingCronService {
     }
 
     this.logger.log(`${this.LOG_PREFIX}/updateCrowdfundingProjects: End`);
+  }
+
+  @Cron('*/3 * * * * *')
+  async processTransactions(): Promise<any> {
+    this.logger.log(`${this.LOG_PREFIX}/processTransactions: Start`);
+    const lastProcessedTimestamp =
+      await this.supabaseService.getLastProcessedTransactionTimestamp();
+    this.logger.log(
+      `${this.LOG_PREFIX}/processTransactions: last processed timestamp = ${lastProcessedTimestamp}`,
+    );
+
+    const newApiTransactions = await this.apiService.getTransactions(
+      lastProcessedTimestamp,
+    );
+    this.logger.log(
+      `${this.LOG_PREFIX}/processTransactions: fetched ${newApiTransactions.length} new transactions from API`,
+    );
+    const unprocessedTransactionHashes =
+      await this.supabaseService.getUnprocessedTransactionHashes(
+        newApiTransactions.map((transaction) => transaction.txHash),
+      );
+
+    const newTransactions = newApiTransactions.filter((transaction) =>
+      unprocessedTransactionHashes.includes(transaction.txHash),
+    );
+
+    const processedTransactions =
+      await this.transactionProcessor.processTransactions(newTransactions);
+
+    await this.supabaseService.addProcessedTransactions(processedTransactions);
+
+    this.logger.log(
+      `${this.LOG_PREFIX}/processTransactions: processed ${newTransactions.length} transactions`,
+    );
+
+    this.logger.log(`${this.LOG_PREFIX}/processTransactions: End`);
   }
 }

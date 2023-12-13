@@ -1,11 +1,12 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { firstValueFrom } from 'rxjs';
-import { networkConfig } from 'src/config';
+import { LOAN_CF_SC_ADDRESS, networkConfig } from 'src/config';
 import {
   DelegationType,
   NetworkStatsType,
   StakingProviderType,
+  TransactionType,
 } from 'src/models';
 
 @Injectable()
@@ -68,6 +69,19 @@ export class ElrondApiService {
     }
     const url = `${networkConfig.apiAddress}/nfts/${tokenIdentifier}-${hexNonce}/accounts/count`;
     const res = await firstValueFrom(this.httpService.get<number>(url).pipe());
+    return res.data;
+  }
+
+  async getTransactions(
+    afterTimestamp?: number,
+  ): Promise<TransactionType[]> {
+    let url = `${networkConfig.apiAddress}/transactions?size=10000&receiver=${LOAN_CF_SC_ADDRESS}`;
+    if (afterTimestamp) {
+      url += `&after=${afterTimestamp}`;
+    }
+    const res = await firstValueFrom(
+      this.httpService.get<TransactionType[]>(url).pipe(),
+    );
     return res.data;
   }
 }
