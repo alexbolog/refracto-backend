@@ -131,9 +131,10 @@ export class SupabaseService {
     shareTokenNonce: number,
   ): Promise<number> {
     const { data, error } = await this.supabase
-      .from('projects')
+      .from('Projects')
       .select('id')
-      .eq('ShareTokenNonce', shareTokenNonce);
+      .eq('shareTokenNonce', shareTokenNonce)
+      .single();
 
     if (error) {
       this.logger.error('Error getting project id by share token nonce', error);

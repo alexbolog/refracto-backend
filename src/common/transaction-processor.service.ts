@@ -27,11 +27,11 @@ export class TransactionProcessorService {
   private async parseTransaction(
     transaction: TransactionType,
   ): Promise<ProcessedTransaction> {
-    const transferInfo =
-      transaction.function === 'invest'
-        ? this.extractTransferInfo(transaction.action, 'USDC')
-        : null;
-    const projectId = this.extractProjectId(transaction.action);
+    const transferInfo = this.extractTransferInfo(transaction.action);
+    const projectId = await this.extractProjectId(
+      transaction.action,
+      transferInfo.nonce,
+    );
     return {
       tx_hash: transaction.txHash,
       sender: transaction.sender,
@@ -44,26 +44,51 @@ export class TransactionProcessorService {
     };
   }
 
-  private extractTransferInfo(
-    txAction: any,
-    targetTicker: string,
-  ): { amount: number; transferToken: string } {
-    const transferIn = txAction.arguments.transfers.find((t) =>
-      t.ticker.includes(targetTicker),
-    );
-    if (!transferIn) {
-      return { amount: 0, transferToken: 'N/A' };
+  private extractTransferInfo(txAction: any): {
+    transferToken: string;
+    nonce: number;
+    amount: number;
+  } {
+    if (!txAction?.arguments?.transfers.length) {
+      return { transferToken: 'N/A', nonce: 0, amount: 0 };
     }
-    return {
-      amount: new BigNumber(transferIn.value).shiftedBy(-6).toNumber(),
-      transferToken: transferIn.token,
-    };
+    const transferIn = txAction.arguments.transfers[0];
+    const amount = new BigNumber(transferIn.value)
+      .shiftedBy(-transferIn.decimals)
+      .toNumber();
+
+    switch (transferIn.type) {
+      case 'MetaESDT':
+        const nonce = parseInt(transferIn.identifier.split('-').pop(), 16);
+        const transferToken = transferIn.identifier;
+        return {
+          transferToken,
+          nonce,
+          amount,
+        };
+      case 'FungibleESDT':
+        return {
+          transferToken: transferIn.token,
+          nonce: 0,
+          amount,
+        };
+      default:
+        return { transferToken: 'N/A', nonce: 0, amount };
+    }
   }
 
-  private extractProjectId(txAction: any): number | null {
-    if (txAction?.arguments?.functionName !== 'invest') {
-      return null;
+  private async extractProjectId(
+    txAction: any,
+    nonce: number,
+  ): Promise<number | null> {
+    switch (txAction?.arguments?.functionName) {
+      case 'invest':
+        return parseInt(txAction.arguments.functionArgs, 16);
+      case 'withdraw':
+      case 'claimRefund':
+        return this.supabaseService.getProjectIdByShareTokenNonce(nonce);
+      default:
+        return null;
     }
-    return parseInt(txAction.arguments.functionArgs, 16);
   }
 }
