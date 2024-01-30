@@ -51,6 +51,7 @@ export class SupabaseService {
       thumbnailSrc: r.thumbnailsrc,
       tokenNonce: r.sharetokennonce,
       holdersCount: r.holders,
+      status: r.status,
     }));
   }
 
