@@ -18,4 +18,5 @@ export interface SCProjectDetails {
   is_cancelled: boolean;
   is_loan_active: boolean;
   is_repaid: boolean;
+  status: number;
 }
