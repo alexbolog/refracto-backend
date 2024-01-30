@@ -26,7 +26,7 @@ export class SupabaseService {
   async getProjectIds(): Promise<number[]> {
     const { data, error } = await this.supabase.rpc('read_update_project_data');
     if (error) {
-      console.log('Error getting project ids', error);
+      this.logger.error('Error getting project ids', error);
       return [];
     }
 
@@ -36,7 +36,7 @@ export class SupabaseService {
   async getUiProjects(): Promise<any[]> {
     const { data, error } = await this.supabase.rpc('read_project_data');
     if (error) {
-      console.log('Error: ', error);
+      this.logger.error('Error getting project data', error);
       return []; // return an empty array in case of an error
     }
     return data.map((r: any) => ({
@@ -70,7 +70,7 @@ export class SupabaseService {
       _status: status,
     });
     if (error) {
-      console.log(
+      this.logger.error(
         `Error setting crowdfunded amount for projectId = ${projectId}`,
         error,
       );
@@ -83,7 +83,10 @@ export class SupabaseService {
     );
 
     if (error) {
-      console.log('Error getting last processed transaction timestamp', error);
+      this.logger.error(
+        'Error getting last processed transaction timestamp',
+        error,
+      );
       return 0;
     }
 
@@ -101,7 +104,7 @@ export class SupabaseService {
     });
 
     if (error) {
-      console.log('Error adding processed transactions', error);
+      this.logger.error('Error adding processed transactions', error);
     }
   }
 
@@ -117,10 +120,26 @@ export class SupabaseService {
     );
 
     if (error) {
-      console.log('Error getting unprocessed transaction hashes', error);
+      this.logger.error('Error getting unprocessed transaction hashes', error);
       return [];
     }
 
     return data.map((d: { tx_hash: string }) => d.tx_hash);
+  }
+
+  async getProjectIdByShareTokenNonce(
+    shareTokenNonce: number,
+  ): Promise<number> {
+    const { data, error } = await this.supabase
+      .from('projects')
+      .select('id')
+      .eq('ShareTokenNonce', shareTokenNonce);
+
+    if (error) {
+      this.logger.error('Error getting project id by share token nonce', error);
+      return 0;
+    }
+
+    return data === null ? 0 : data.id;
   }
 }
