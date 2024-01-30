@@ -24,6 +24,26 @@ export class TransactionProcessorService {
     return processedTransactions;
   }
 
+  private async parseTransaction(
+    transaction: TransactionType,
+  ): Promise<ProcessedTransaction> {
+    const transferInfo =
+      transaction.function === 'invest'
+        ? this.extractTransferInfo(transaction.action, 'USDC')
+        : null;
+    const projectId = this.extractProjectId(transaction.action);
+    return {
+      tx_hash: transaction.txHash,
+      sender: transaction.sender,
+      function: transaction.function,
+      tx_timestamp: transaction.timestamp,
+      status: transaction.status,
+      amount: transferInfo?.amount ?? 0,
+      transfer_token: transferInfo?.transferToken ?? 'N/A',
+      project_id: projectId,
+    };
+  }
+
   private extractTransferInfo(
     txAction: any,
     targetTicker: string,
@@ -45,25 +65,5 @@ export class TransactionProcessorService {
       return null;
     }
     return parseInt(txAction.arguments.functionArgs, 16);
-  }
-
-  private async parseTransaction(
-    transaction: TransactionType,
-  ): Promise<ProcessedTransaction> {
-    const projectId = this.extractProjectId(transaction.action);
-    const transferInfo =
-      transaction.function === 'invest'
-        ? this.extractTransferInfo(transaction.action, 'USDC')
-        : null;
-    return {
-      tx_hash: transaction.txHash,
-      sender: transaction.sender,
-      function: transaction.function,
-      tx_timestamp: transaction.timestamp,
-      status: transaction.status,
-      amount: transferInfo?.amount ?? 0,
-      transfer_token: transferInfo?.transferToken ?? 'N/A',
-      project_id: projectId,
-    };
   }
 }
