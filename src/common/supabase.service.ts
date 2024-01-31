@@ -51,6 +51,7 @@ export class SupabaseService {
       thumbnailSrc: r.thumbnailsrc,
       tokenNonce: r.sharetokennonce,
       holdersCount: r.holders,
+      status: r.status,
     }));
   }
 
@@ -59,12 +60,14 @@ export class SupabaseService {
     crowdfundedAmount: number,
     holdersCount: number,
     shareTokenNonce: number,
+    status: number,
   ): Promise<void> {
     const { error } = await this.supabase.rpc('update_project_sc_data', {
       _projectid: projectId,
       _amount: crowdfundedAmount,
       _holderscount: holdersCount,
       _sharetokennonce: shareTokenNonce,
+      _status: status,
     });
     if (error) {
       console.log(

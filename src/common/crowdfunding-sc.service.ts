@@ -61,6 +61,7 @@ export class CrowdfundingScService {
       is_cancelled: value.is_cancelled,
       is_loan_active: value.is_loan_active,
       is_repaid: value.is_repayed,
+      status: value.funding_state.toNumber(),
     }));
 
     return decoded;

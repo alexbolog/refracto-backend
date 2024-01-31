@@ -46,7 +46,8 @@ export class CrowdfundingCronService {
         !existingUiProject ||
         existingUiProject.tokenNonce !== project.share_token_nonce ||
         existingUiProject.crowdfundedAmount !== project.cf_progress ||
-        existingUiProject.holdersCount !== holdersCount - 1
+        existingUiProject.holdersCount !== holdersCount - 1 ||
+        existingUiProject.status !== project.status
       ) {
         this.logger.log(
           `${this.LOG_PREFIX}/updateCrowdfundingProjects: updating project ${project.project_id}`,
@@ -56,6 +57,7 @@ export class CrowdfundingCronService {
           project.cf_progress,
           holdersCount - 1,
           project.share_token_nonce,
+          project.status,
         );
       }
     }

@@ -9,8 +9,6 @@ export const networkConfig = networkConfigs[ELROND_NETWORK];
 
 export const IS_DEV = (ELROND_NETWORK as string) != 'mainnet';
 
-//
-export const HOT_WALLET_PEM = process.env.HOT_WALLET_PEM_PATH;
 export const WALLET_NONCE_UPDATE_PERIOD = 60 * 2000; // 2 min
 
 export const LOAN_CF_SC_ADDRESS = IS_DEV
